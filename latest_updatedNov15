@@ -1,0 +1,103 @@
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+import re
+import bs4
+import requests
+import webbrowser
+import sys
+import pyperclip
+import pandas as pd
+from selenium.common.exceptions import NoSuchCookieException, NoSuchElementException
+from selenium.webdriver.support.ui import Select
+from time import sleep
+#8cg7222dcd
+page = requests.get('https://partsurfer.hp.com/Search.aspx')
+page.raise_for_status()
+
+
+# Asks user for serial number
+print('enter serial number')
+serial_number =  input()
+print('enter item description')
+item = input().upper()
+  
+options = webdriver.ChromeOptions()
+options.add_experimental_option("excludeSwitches", ["enable-logging"])
+#options.page_load_strategy = 'eager'
+
+driver = webdriver.Chrome(
+    options=options, executable_path=r'C:/Users/biven/mypythonscripts/chromedriver')
+driver.get('https://partsurfer.hp.com/Search.aspx')
+#driver.manage().window().maximize()
+wait = WebDriverWait(driver, 1)
+
+select = Select(driver.find_element_by_name(
+    'ctl00$BodyContentPlaceHolder$ddlCountry'))
+select.select_by_visible_text('United States')
+
+element = wait.until(EC.element_to_be_clickable(
+    (By.XPATH, "// *[@id='onetrust-accept-btn-handler']"))).click()
+
+#alert = driver.switch_to.alert
+
+textElem = driver.find_element_by_name(
+    "ctl00$BodyContentPlaceHolder$SearchText$TextBox1")
+textElem.send_keys(serial_number)
+textElem.submit()
+searchElem = driver.find_element_by_xpath("//*[@id='ctl00_BodyContentPlaceHolder_SearchText_btnSubmit']").click()
+
+soup = bs4.BeautifulSoup(driver.page_source, features="lxml")
+tables = soup.find_all('table', {"class": ["table_sortable", "suppress_all sortable stats_table now_sortable",
+                       "table_sortable  tbl", "suppress_glossary sortable stats_table now_sortable"]})
+#print(tables)
+
+#rows = soup.find_all("td", "title")
+
+table = tables[1]
+
+
+tab_data = [[cell.text for cell in row.find_all(["th", "td"])]
+            for row in table.find_all("tr")]
+#print(tab_data)
+#print(type(tab_data))
+thislist = tab_data
+
+pattern=re.compile(r'lcd')
+str_match = [x for x in thislist if re.search('lcd', x)]
+print(str_match)
+
+#print(thislist[1])
+#vector = tab_data
+#L = [text for list in vector for text in list]
+#print(L)
+#for lists in tab_data:
+#    for list in lists:
+#        for text in list:
+#            print(text[0:7], end=' ')
+print(len(thislist))
+
+
+#df = pd.DataFrame(tab_data)
+#df.columns = df.iloc[0, :]
+#df.drop(index=0, inplace=True)
+
+#tabs_dic = {}
+
+#for table in tables:
+#    tab_name = table['id']
+
+#    tab_data = [[cell.text for cell in row.find_all(["th", "td"])]
+#                for row in table.find_all("tr")]
+#    df = pd.DataFrame(tab_data)
+#    df.columns = df.iloc[0, :]
+#    df.drop(index=0, inplace=True)
+
+    #df = df.loc[df.Season != ""]
+#    tabs_dic[tab_name] = df
+
+
+
+sleep(2)
+
