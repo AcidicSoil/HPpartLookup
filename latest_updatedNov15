@@ -1,3 +1,4 @@
+from typing import Pattern
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -22,7 +23,10 @@ print('enter serial number')
 serial_number =  input()
 print('enter item description')
 item = input().upper()
-  
+
+keywords = [item]
+#print(type(keywords))
+
 options = webdriver.ChromeOptions()
 options.add_experimental_option("excludeSwitches", ["enable-logging"])
 #options.page_load_strategy = 'eager'
@@ -51,22 +55,79 @@ searchElem = driver.find_element_by_xpath("//*[@id='ctl00_BodyContentPlaceHolder
 soup = bs4.BeautifulSoup(driver.page_source, features="lxml")
 tables = soup.find_all('table', {"class": ["table_sortable", "suppress_all sortable stats_table now_sortable",
                        "table_sortable  tbl", "suppress_glossary sortable stats_table now_sortable"]})
-#print(tables)
+#print(type(tables))
 
 #rows = soup.find_all("td", "title")
 
 table = tables[1]
-
-
 tab_data = [[cell.text for cell in row.find_all(["th", "td"])]
             for row in table.find_all("tr")]
 #print(tab_data)
 #print(type(tab_data))
 thislist = tab_data
+#print(type(thislist))
+test3 = soup.find(string='BACK COVER, LCD NSV')
+#print(test3)
+#print(test3.find_parent("td"))
 
-pattern=re.compile(r'lcd')
-str_match = [x for x in thislist if re.search('lcd', x)]
-print(str_match)
+test4 = soup.find(string='926482-001')
+#print(test4)
+#print(test4.find_parent('td'))
+
+pattern = re.compile('LCD')
+
+test5 = soup.table
+#print(test5)
+#test 5 value
+#test5v = print(test5.find_next_siblings("table"))
+#print(test5)
+#print(type(test5v))
+#test = soup.find_all('tr', {'id': re.findall(r'LCD')})
+#print(test)
+# Grabs part page current url and turns it into html
+
+
+url2 = driver.current_url
+print(url2)
+
+req1 = requests.get(url2)
+if req1.status_code in [200]:
+    html_doc = req1.text
+else:
+    print('Could not retrieve: % s, err: % s - status code: % s' % (url2, req1.text, req1.status_code))
+#print(html_doc)  
+
+soup1 = bs4.BeautifulSoup(html_doc, 'html.parser')
+#print(soup1.prettify())
+#print(soup1.get_text())
+tag1 = soup1.td
+print(type(tag1))
+print(tag1.name)
+tag2 = bs4.BeautifulSoup(html_doc, 'html.parser').td   
+print(tag2['title'])
+datatables = soup1.select('#ctl00_BodyContentPlaceHolder_gridSpareBOM > tbody')
+
+#partPageHtml = urlopen(url2)
+
+#partPage = bs4.BeautifulSoup(html_doc, 'html.parser')
+#print(partPage.prettify())
+#test2 = soup.find_all(['tr', 'td'])
+#print(type(test2))
+
+#for tag in soup.find_all(True):
+#    print(tag.name)
+#print(type(thislist))
+
+#for line in thislist:
+#    for word in keywords:
+#        if word in line:
+#            print(line)
+#            break
+
+#print(thislist)
+#m = re.match(r"(\w+) (\w+)", )
+#m.group(0)
+#m.group(1)
 
 #print(thislist[1])
 #vector = tab_data
@@ -76,7 +137,7 @@ print(str_match)
 #    for list in lists:
 #        for text in list:
 #            print(text[0:7], end=' ')
-print(len(thislist))
+#print(len(thislist))
 
 
 #df = pd.DataFrame(tab_data)
@@ -96,8 +157,4 @@ print(len(thislist))
 
     #df = df.loc[df.Season != ""]
 #    tabs_dic[tab_name] = df
-
-
-
 sleep(2)
-
