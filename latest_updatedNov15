@@ -30,12 +30,13 @@ keywords = [item]
 options = webdriver.ChromeOptions()
 options.add_experimental_option("excludeSwitches", ["enable-logging"])
 #options.page_load_strategy = 'eager'
-
+options.add_argument('headless')
 driver = webdriver.Chrome(
-    options=options, executable_path=r'C:/Users/biven/mypythonscripts/chromedriver')
+    options=options, executable_path=r'C:/Users/user/mypythonscripts/chromedriver')
+
 driver.get('https://partsurfer.hp.com/Search.aspx')
 #driver.manage().window().maximize()
-wait = WebDriverWait(driver, 1)
+wait = WebDriverWait(driver, 3)
 
 select = Select(driver.find_element_by_name(
     'ctl00$BodyContentPlaceHolder$ddlCountry'))
@@ -62,14 +63,16 @@ tables = soup.find_all('table', {"class": ["table_sortable", "suppress_all sorta
 table = tables[1]
 tab_data = [[cell.text for cell in row.find_all(["th", "td"])]
             for row in table.find_all("tr")]
-#print(tab_data)
+print(tab_data)
+print(len(tab_data))
 #print(type(tab_data))
 thislist = tab_data
 #print(type(thislist))
-test3 = soup.find(string='BACK COVER, LCD NSV')
+#test3 = soup.find(string='BACK COVER, LCD NSV')
+#test3 = soup.find(string=re.compile("L??"))
+#print(test3)
 #print(test3)
 #print(test3.find_parent("td"))
-
 test4 = soup.find(string='926482-001')
 #print(test4)
 #print(test4.find_parent('td'))
@@ -101,11 +104,22 @@ soup1 = bs4.BeautifulSoup(html_doc, 'html.parser')
 #print(soup1.prettify())
 #print(soup1.get_text())
 tag1 = soup1.td
-print(type(tag1))
-print(tag1.name)
-tag2 = bs4.BeautifulSoup(html_doc, 'html.parser').td   
-print(tag2['title'])
-datatables = soup1.select('#ctl00_BodyContentPlaceHolder_gridSpareBOM > tbody')
+#print(type(tag1))
+#print(tag1.name)
+#tag2 = bs4.BeautifulSoup(html_doc, 'html.parser').td
+#print(tag2['title'])
+#soup1.table.
+
+#for tag in soup1.find_all(re.compile("^[A-Za-z]*$", "td")):
+#    print(tag.name)
+#for table in soup1.table:
+#    print(table)
+#re.match("^[A-Za-z]*$", "LCD")
+#print(soup1.table)
+#print(soup1.find_all('table'))
+#for child in soup1.:
+#    print(tag.con)
+#testA = print(soup1.table)
 
 #partPageHtml = urlopen(url2)
 
@@ -160,3 +174,4 @@ datatables = soup1.select('#ctl00_BodyContentPlaceHolder_gridSpareBOM > tbody')
 sleep(2)
 #https://stackoverflow.com/questions/23580726/python-beautifulsoup-list-index-after-the-table
 #https://www.crummy.com/software/BeautifulSoup/bs4/doc/
+driver.close()
