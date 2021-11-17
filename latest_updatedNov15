@@ -176,4 +176,5 @@ tag1 = soup1.td
 sleep(2)
 #https://stackoverflow.com/questions/23580726/python-beautifulsoup-list-index-after-the-table
 #https://www.crummy.com/software/BeautifulSoup/bs4/doc/
+#https://towardsdatascience.com/scrape-tabular-data-with-python-b1dd1aeadfad
 driver.close()
