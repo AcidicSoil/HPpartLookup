@@ -30,19 +30,23 @@ def main():
     #Finds path to chrome driver
     driver = webdriver.Chrome(
         options=options, executable_path=r'C:/Users/'+ username + '/mypythonscripts/chromedriver')
+    
     #Goes to URL home page
     url2 = driver.current_url
+   
     req1 = requests.get(url2)
-    if req1.status_code in [200]:
-        html_doc = req1.text
-    else:
-        print('Could not retrieve: % s, err: % s - status code: % s' %
-            (url2, req1.text, req1.status_code))
 
     driver.implicitly_wait(30)
+   
     driver.get(url2)  
     elems = driver.find_elements_by_tag_name('a')
     for elem in elems:
         href = elem.get_attribute('href')
         if href is not None:
             print(href)
+
+    sleep(2)
+    driver.close()
+
+if __name__ == "__main__":
+    main()
