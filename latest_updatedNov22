@@ -60,10 +60,12 @@ def main():
 
     #Inputs serial number in search box
     textElem.send_keys(serial_number)
+    
     #Clicks submit on search box
     textElem.submit()
     searchElem = driver.find_element_by_xpath(
         "//*[@id='ctl00_BodyContentPlaceHolder_SearchText_btnSubmit']").click()
+    
     # Grabs part page current url and turns it into html
     url2 = driver.current_url
 
@@ -76,39 +78,30 @@ def main():
 
     driver.implicitly_wait(30)
     driver.get(url2)
+    
     df = pd.read_html(driver.find_element_by_id(
         "ctl00_BodyContentPlaceHolder_gridSpareBOM").get_attribute('outerHTML'))[0]
+    
     # Displays dataframe by column labels
     display(df[['Spare Part Number', 'Spare Part Description']])
     
     df = df[df['Spare Part Description'].str.contains(item)]
-    #df1 = pd.DataFrame(df,)
     display(df)
     
-    test = print(df['Spare Part Number'],'\n')
-    print(type(test))
+    # Replaces all white spaces in column headers with an underscore
+    df.columns = [c.replace(' ', '_') for c in df.columns]
+    print(df.columns)
+
+#    for col_name in df.columns:
+#        print(col_name)
+    
+    # This value should be used in another function to web search 
+    row_index = int(input('Enter row index: '))
+    print(df.Spare_Part_Number[row_index])
+
     sleep(2)
-    
-    #print('test1:', df[df['Spare Part Number'].int]
-    
-    #input_part_row = input("Enter row index: ")
-    #print(type(input_part_row))
-    #"""  print("")
-    #user_list = input_part_row.split()
-    #print('list', user_list)
-    #for i in range(len(user_list)):
-    #    user_list[i] = int(user_list[i])
-    #print((type(user_list))) """
-    #part_number = pd.DataFrame.loc[:input_part_row]
-    #display(part_number)
     driver.close()
     #8cg7222dcd
     
 if __name__ == "__main__":
     main()
-
-
-#i = 0
-#while i != part_number:
-#    part_number = input("Enter row index: ")
-#    if 
