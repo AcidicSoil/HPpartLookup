@@ -1,0 +1,136 @@
+from typing import Pattern
+from urllib import parse
+from requests.models import Response
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.keys import Keys
+import re
+from re import match
+import bs4
+from bs4 import BeautifulSoup
+import requests
+import webbrowser
+import sys
+import pyperclip
+import pandas as pd
+import html5lib
+from selenium.common.exceptions import NoSuchCookieException, NoSuchElementException
+from selenium.webdriver.support.ui import Select
+from time import sleep
+from IPython.display import display
+import numpy as np
+from dataclasses import make_dataclass
+import os
+from urllib.parse import urlparse
+import urllib.request
+username = os.getlogin()
+options = webdriver.ChromeOptions()
+driver = webdriver.Chrome(
+    options=options, executable_path=r'C:/Users/' + username + '/mypythonscripts/chromedriver')
+list_of_links = []
+cleaned_list_of_indexes = []
+idx_range_list = []
+def main():
+    #page = requests.get('https://www.google.com/')
+    #page.raise_for_status()
+
+    options.add_experimental_option("excludeSwitches", ["enable-logging"])
+    options.add_experimental_option("detach", True)
+    #Runs selenium in the background
+    #options.add_argument('headless')
+    
+    #Goes to URL home page
+    driver.get('https://www.google.com/search?q=allintext%3A926482-001+site%3Aebay.com&rlz=1C1CHBF_enUS902US902&oq=allintext%3A926482-001+site%3Aebay.com&aqs=chrome..69i57j69i58.793j0j15&sourceid=chrome&ie=UTF-8')
+    wait = WebDriverWait(driver, 30)
+    #Search_bar = driver.find_element_by_name(
+     #   "q")
+
+    #Inputs part number and vendor site in search box
+    #Search_bar.send_keys("allintext:926482-001 site:ebay.com", Keys.ENTER)
+    
+   # add_links_list()
+    #filter_list()
+    get_href_link_list()
+    get_ebay_links()
+    click_ebay_links()
+    #index_list()
+    
+
+
+def get_href_link_list():
+    #list_of_links = []
+    soup = BeautifulSoup(driver.page_source, features='lxml')
+    for a_tag in soup.find_all('a'):
+        href_list = [(a_tag.get('href'))]
+        list_of_links.append(str(href_list))
+        #return href_list
+    #print(list_of_links[30:39])
+    #link_range = list(range(start,end))
+    #a = np.random.randn(idx_range_list[1])
+    #print(a)
+    #idx = list(range(list_of_links(idx_range_list))
+        #for index, href in enumerate(list_of_links):
+        #list_of_links.append(str(href_list))
+        #links_to_click = driver.fin
+            #print(f"{index}:{href}")
+        #print(list_of_links)
+
+def get_ebay_links():
+    #link_index = []
+    #l = get_href_link_list()
+    new_list = [s[14:18] for s in list_of_links]
+    #b = [(idx, item) for idx, item in enumerate(new_list)]
+    #print(b)
+    #print(new_list)
+    # creates a list idx_list and enumerates a list of substringed values from list_of_links
+    # if ebay is in list it appends the index to idx_list. 
+    idx_list = []
+    for idx, item in enumerate(new_list):
+            if "ebay" in item:
+                idx_list.append(f"{idx}")
+    #print(idx_list)
+    # Finds the start and end of the indexes that have the proper links that will be needed for a range call.
+    idx_range_start = int(idx_list[0])
+    idx_range_end = int(idx_list[-1])
+    #return list_of_links[idx_range_start:idx_range_end]
+    #print(list_of_links[idx_range_start:idx_range_end])
+    #print(type(list_of_links[idx_range_start:idx_range_end]))
+    clean_list = list_of_links[idx_range_start:idx_range_end]
+    #print(type(clean_list))
+    return clean_list
+#a = get_href_link_list()
+#print(a)   
+#a = get_ebay_links()
+#print(a)
+
+def click_ebay_links():
+    for link in get_ebay_links():
+        # Click into links first then run code Try selenium 
+        price = getEbayPrice(link)
+
+        return print("The price is: " + price)
+        #getEbayPrice(link)
+
+def getEbayPrice(productUrl):
+    res = requests.get(productUrl)
+    res.raise_for_status()
+    soup = bs4.BeautifulSoup(res.text, 'html.parser')
+    selector1 = (bool(soup.select('#prcIsum')))
+    selector2 = (bool(soup.select(
+        '#s0-0-18-5-12-26-50 > div > span.item-price > div')))
+    if selector1 == True:
+        elems = soup.select('#prcIsum')
+    elif selector2 == True:
+        elems = soup.select(
+            '#s0-0-18-5-12-26-50 > div > span.item-price > div')
+    return elems[0].text.strip()
+
+
+
+
+
+main()
+sleep(2)
+driver.close()
